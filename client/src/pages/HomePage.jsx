@@ -224,10 +224,10 @@ export default function HomePage() {
           </motion.div>
 
           {/* ─── Headline with word-by-word stagger ─── */}
-          <h1 className="text-5xl lg:text-7xl font-bold tracking-tight leading-[1.1] mb-6">
-            <AnimatedWords text="Crystal clear calls." className="text-[var(--color-text-primary)] block" />
+          <h1 className="text-5xl lg:text-7xl font-bold tracking-tight leading-[1.1] mb-6" style={{ textShadow: '0 2px 20px rgba(0,0,0,0.8)' }}>
+            <AnimatedWords text="Crystal clear calls." className="text-white block" />
             <br />
-            <span className="gradient-text-animated text-5xl lg:text-7xl font-bold">
+            <span className="text-5xl lg:text-7xl font-bold" style={{ color: '#9b87f5' }}>
               <AnimatedWords text="Just you and them." />
             </span>
           </h1>
@@ -238,6 +238,7 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.5 }}
             className="text-lg lg:text-xl text-[var(--color-text-secondary)] max-w-xl mx-auto mb-12 leading-relaxed"
+            style={{ textShadow: '0 2px 16px rgba(0,0,0,0.6)' }}
           >
             Start a video call instantly with anyone, anywhere. No sign-ups,
             no installs — just seamless, peer-to-peer conversations.
@@ -263,7 +264,7 @@ export default function HomePage() {
         </div>
 
         {/* ─── Feature Cards with 3D tilt ─── */}
-        <div className="mt-24 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl w-full">
+        <div className="mt-52 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl w-full" style={{ gap: '24px' }}>
           {features.map((feat, i) => (
             <motion.div
               key={feat.title}
@@ -272,12 +273,13 @@ export default function HomePage() {
               transition={{ delay: 1.2 + i * 0.12, duration: 0.5 }}
             >
               <TiltCard>
-                <div className="glass-card rounded-2xl p-6 text-center">
+                <div className="glass-card rounded-2xl text-center" style={{ padding: '32px', borderColor: 'rgba(124, 58, 237, 0.15)' }}>
                   <div
-                    className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-4 text-purple-400"
+                    className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-4"
                     style={{
-                      background: 'linear-gradient(135deg, rgba(124,58,237,0.15), rgba(99,102,241,0.15))',
+                      background: 'rgba(124,58,237,0.12)',
                       boxShadow: '0 0 20px rgba(124,58,237,0.1)',
+                      color: '#7c3aed',
                     }}
                   >
                     {feat.icon}

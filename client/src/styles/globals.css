@@ -73,13 +73,13 @@ video { object-fit: cover; }
   background: rgba(255,255,255,0.03);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255,255,255,0.08);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.06);
+  border: 1px solid rgba(124,58,237,0.15);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(124,58,237,0.06), inset 0 1px 0 rgba(255,255,255,0.04);
 }
 
 /* ─── Gradient text ─── */
 .gradient-text {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6, #a78bfa);
+  background: linear-gradient(135deg, #7c3aed, #9b87f5, #c4b5fd);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -92,22 +92,18 @@ video { object-fit: cover; }
 }
 
 .gradient-text-animated {
-  background: linear-gradient(270deg, #7c3aed, #6366f1, #ec4899, #8b5cf6, #7c3aed);
-  background-size: 300% 300%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: gradient-shift 6s ease-in-out infinite;
+  color: #9b87f5;
+  -webkit-text-fill-color: #9b87f5;
 }
 
 /* ─── Gradient button ─── */
 .gradient-btn {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, #6d28d9, #7c3aed);
   transition: all 200ms ease;
 }
 .gradient-btn:hover {
-  background: linear-gradient(135deg, #7c7ff7, #9d75ff);
-  box-shadow: 0 0 40px rgba(124,58,237,0.35);
+  background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+  box-shadow: 0 0 40px rgba(124,58,237,0.4);
 }
 
 /* ─── Spinning conic-gradient glow ─── */

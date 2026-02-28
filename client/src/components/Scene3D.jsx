@@ -22,28 +22,30 @@ function HeroMesh() {
 
   return (
     <Float speed={1.2} rotationIntensity={0.3} floatIntensity={0.8}>
-      <group>
+      <group position={[0, 0, 0]} scale={1}>
         {/* Solid mesh */}
         <mesh ref={meshRef}>
           <torusKnotGeometry args={[1, 0.35, 128, 32]} />
           <MeshDistortMaterial
-            color="#7c3aed"
-            emissive="#7c3aed"
-            emissiveIntensity={0.4}
-            roughness={0.3}
-            metalness={0.8}
+            color="#4c1d95"
+            emissive="#5b21b6"
+            emissiveIntensity={0.25}
+            roughness={0.4}
+            metalness={0.7}
             distort={0.4}
             speed={1.5}
+            transparent
+            opacity={0.4}
           />
         </mesh>
         {/* Wireframe overlay */}
         <mesh ref={wireRef}>
           <torusKnotGeometry args={[1, 0.35, 128, 32]} />
           <meshBasicMaterial
-            color="#a78bfa"
+            color="#7c3aed"
             wireframe
             transparent
-            opacity={0.08}
+            opacity={0.03}
           />
         </mesh>
       </group>
@@ -71,11 +73,11 @@ function FloatingShape({ position, geometry, scale = 0.3, speed = 0.5 }) {
       {geometry === 'icosahedron' && <icosahedronGeometry args={[1, 0]} />}
       {geometry === 'dodecahedron' && <dodecahedronGeometry args={[1, 0]} />}
       <meshStandardMaterial
-        color="#7c3aed"
-        emissive="#6d28d9"
-        emissiveIntensity={0.3}
+        color="#4c1d95"
+        emissive="#5b21b6"
+        emissiveIntensity={0.15}
         transparent
-        opacity={0.15}
+        opacity={0.08}
         roughness={0.5}
         metalness={0.6}
       />
@@ -91,9 +93,9 @@ function GlowPlane() {
     canvas.height = 512;
     const ctx = canvas.getContext('2d');
     const gradient = ctx.createRadialGradient(256, 256, 0, 256, 256, 256);
-    gradient.addColorStop(0, 'rgba(124, 58, 237, 0.25)');
-    gradient.addColorStop(0.5, 'rgba(124, 58, 237, 0.08)');
-    gradient.addColorStop(1, 'rgba(124, 58, 237, 0)');
+    gradient.addColorStop(0, 'rgba(91, 33, 182, 0.12)');
+    gradient.addColorStop(0.5, 'rgba(91, 33, 182, 0.04)');
+    gradient.addColorStop(1, 'rgba(91, 33, 182, 0)');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, 512, 512);
     const tex = new THREE.CanvasTexture(canvas);
@@ -115,10 +117,10 @@ function GlowPlane() {
 function SceneContent({ subtle = false }) {
   return (
     <>
-      <ambientLight intensity={0.15} />
-      <pointLight position={[5, 5, 5]} intensity={0.6} color="#a78bfa" />
-      <pointLight position={[-5, -3, 3]} intensity={0.3} color="#6366f1" />
-      <directionalLight position={[0, 5, 5]} intensity={0.2} color="#ddd6fe" />
+      <ambientLight intensity={0.1} />
+      <pointLight position={[5, 5, 5]} intensity={0.35} color="#9b87f5" />
+      <pointLight position={[-5, -3, 3]} intensity={0.15} color="#7c3aed" />
+      <directionalLight position={[0, 5, 5]} intensity={0.12} color="#c4b5fd" />
 
       <GlowPlane />
 
@@ -143,12 +145,12 @@ function SceneContent({ subtle = false }) {
       )}
 
       <Sparkles
-        count={subtle ? 60 : 120}
-        color="#a78bfa"
-        size={1.5}
-        opacity={subtle ? 0.3 : 0.6}
+        count={subtle ? 40 : 70}
+        color="#c4b5fd"
+        size={1.2}
+        opacity={subtle ? 0.2 : 0.4}
         scale={[20, 20, 20]}
-        speed={0.4}
+        speed={0.3}
       />
 
       {/* Floating shapes */}
@@ -172,6 +174,16 @@ function SceneContent({ subtle = false }) {
 export default function Scene3D({ subtle = false, className = '' }) {
   return (
     <div className={`absolute inset-0 ${className}`} style={{ zIndex: 0 }}>
+      {/* Dark radial vignette overlay for text readability */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 1,
+          pointerEvents: 'none',
+          background: 'radial-gradient(ellipse 60% 50% at 50% 38%, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 50%, transparent 100%)',
+        }}
+      />
       <Canvas
         dpr={[1, 1.5]}
         camera={{ position: [0, 0, 6], fov: 45 }}
