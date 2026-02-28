@@ -58,8 +58,15 @@ export default function RoomGrid({
       <div className="flex-1 flex gap-3 p-3 h-full overflow-hidden">
         {/* Main screen share */}
         <div className="flex-1 flex flex-col gap-2 min-w-0">
-          <div className="glass rounded-full px-4 py-1.5 self-start flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-[var(--color-success)] animate-pulse" />
+          <div
+            className="rounded-full px-4 py-1.5 self-start flex items-center gap-2"
+            style={{
+              background: 'rgba(12,12,20,0.7)',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(124,58,237,0.15)',
+            }}
+          >
+            <div className="w-2 h-2 rounded-full bg-[var(--color-success)] pulse-ring" />
             <span className="text-xs font-medium text-[var(--color-text-primary)]">
               {presenterName} is presenting
             </span>
@@ -139,9 +146,19 @@ export default function RoomGrid({
           transition={{ delay: 0.5 }}
           className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
         >
-          <div className="glass-heavy rounded-2xl p-6 text-center max-w-sm pulse-soft">
-            <Users size={28} className="text-[var(--color-accent)] mx-auto mb-3" />
-            <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">
+          <div
+            className="rounded-2xl p-6 text-center max-w-sm breathe-glow"
+            style={{
+              background: 'rgba(12,12,20,0.85)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(124,58,237,0.15)',
+              boxShadow: '0 8px 40px rgba(0,0,0,0.4), 0 0 40px rgba(124,58,237,0.06)',
+            }}
+          >
+            {/* Top shine */}
+            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+            <Users size={28} className="text-purple-400 mx-auto mb-3" />
+            <h3 className="text-sm font-semibold text-[var(--color-text-primary)] mb-1 tracking-tight">
               Waiting for others to join
             </h3>
             <p className="text-xs text-[var(--color-text-secondary)] mb-4">
@@ -149,14 +166,15 @@ export default function RoomGrid({
             </p>
             <button
               onClick={handleCopy}
-              className="
-                flex items-center gap-2 mx-auto
-                glass rounded-xl px-4 py-2.5
-                hover:bg-white/10 transition-all duration-200
-                text-xs font-medium text-[var(--color-text-primary)]
-              "
+              className="flex items-center gap-2 mx-auto rounded-xl px-4 py-2.5 transition-all duration-200 text-xs font-medium text-[var(--color-text-primary)]"
+              style={{
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.08)',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(124,58,237,0.1)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
             >
-              {copied ? <Check size={14} className="text-[var(--color-success)]" /> : <Link2 size={14} className="text-[var(--color-accent)]" />}
+              {copied ? <Check size={14} className="text-[var(--color-success)]" /> : <Link2 size={14} className="text-purple-400" />}
               {copied ? 'Link copied!' : getRoomUrl(roomId)}
             </button>
           </div>

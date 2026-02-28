@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Video, Copy, Check, Clock } from 'lucide-react';
-// eslint-disable-next-line no-unused-vars -- motion is used via JSX member expressions (motion.div)
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { useSocket } from '../hooks/useSocket';
 import { useMediaStream } from '../hooks/useMediaStream';
@@ -15,6 +15,7 @@ import ParticipantList from '../components/ParticipantList';
 import ConnectionStatus from '../components/ConnectionStatus';
 import ToastContainer from '../components/ToastContainer';
 import Lobby from '../components/Lobby';
+import GlowButton from '../components/GlowButton';
 import { copyToClipboard, getRoomUrl } from '../utils/roomUtils';
 import { formatDuration } from '../utils/formatTime';
 
@@ -459,23 +460,29 @@ export default function RoomPage() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="glass-heavy rounded-2xl p-8 max-w-md text-center"
+          className="relative rounded-2xl p-8 max-w-md text-center"
+          style={{
+            background: 'rgba(12,12,20,0.9)',
+            backdropFilter: 'blur(24px)',
+            border: '1px solid rgba(255,255,255,0.06)',
+            boxShadow: '0 25px 50px rgba(0,0,0,0.5), 0 0 60px rgba(239,68,68,0.06)',
+          }}
         >
-          <div className="w-16 h-16 rounded-2xl bg-[var(--color-danger)]/10 flex items-center justify-center mx-auto mb-4">
+          <div
+            className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
+            style={{ background: 'rgba(239,68,68,0.1)' }}
+          >
             <Video size={28} className="text-[var(--color-danger)]" />
           </div>
-          <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-2">
+          <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-2 tracking-tight">
             Camera Access Required
           </h2>
           <p className="text-sm text-[var(--color-text-secondary)] mb-6">
             {permissionError}
           </p>
-          <button
-            onClick={() => navigate('/')}
-            className="gradient-btn text-white font-medium px-6 py-2.5 rounded-xl text-sm"
-          >
+          <GlowButton variant="primary" onClick={() => navigate('/')}>
             Go Back Home
-          </button>
+          </GlowButton>
         </motion.div>
       </div>
     );
@@ -483,15 +490,32 @@ export default function RoomPage() {
 
   return (
     <div className="h-screen bg-[var(--color-bg)] flex flex-col overflow-hidden">
-      {/* Top bar */}
-      <div className="flex items-center justify-between px-4 py-3 z-20">
+      {/* Frosted glass top bar */}
+      <div
+        className="flex items-center justify-between px-4 py-3 z-20"
+        style={{
+          background: 'rgba(12,12,20,0.6)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          borderBottom: '1px solid rgba(255,255,255,0.04)',
+        }}
+      >
         {/* Left: Logo + Connection */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-light)] flex items-center justify-center">
+            <div
+              className="w-7 h-7 rounded-lg flex items-center justify-center"
+              style={{
+                background: 'linear-gradient(135deg, #7c3aed, #6366f1)',
+                boxShadow: '0 0 12px rgba(124,58,237,0.3)',
+              }}
+            >
               <Video size={14} className="text-white" />
             </div>
-            <span className="text-sm font-semibold text-[var(--color-text-primary)] hidden sm:inline">
+            <span
+              className="text-sm font-semibold text-[var(--color-text-primary)] hidden sm:inline"
+              style={{ filter: 'drop-shadow(0 0 8px rgba(124,58,237,0.2))' }}
+            >
               NearMeet
             </span>
           </div>
@@ -501,7 +525,13 @@ export default function RoomPage() {
         {/* Center: Room ID */}
         <button
           onClick={handleCopyLink}
-          className="glass rounded-full px-4 py-1.5 flex items-center gap-2 hover:bg-white/10 transition-colors"
+          className="rounded-full px-4 py-1.5 flex items-center gap-2 transition-all duration-200"
+          style={{
+            background: 'rgba(255,255,255,0.04)',
+            border: '1px solid rgba(255,255,255,0.06)',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(124,58,237,0.08)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
         >
           <span className="text-xs font-mono text-[var(--color-text-secondary)]">{roomId}</span>
           {copied ? (
