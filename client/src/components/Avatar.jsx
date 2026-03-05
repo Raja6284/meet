@@ -23,9 +23,11 @@ export default function Avatar({ name, size = 'md', className = '' }) {
         bg-gradient-to-br ${colorClass}
         rounded-full flex items-center justify-center 
         font-semibold text-white select-none
-        shadow-lg
         ${className}
       `}
+      style={{
+        boxShadow: '0 0 24px rgba(124,58,237,0.2), 0 4px 12px rgba(0,0,0,0.3)',
+      }}
     >
       {initials}
     </motion.div>

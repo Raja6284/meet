@@ -33,6 +33,52 @@ app.get('/api/room/:roomId', (req, res) => {
   res.json({ roomId, participantCount: count });
 });
 
+// TURN credentials endpoint (Cloudflare TURN)
+app.post('/api/turn-credentials', async (req, res) => {
+  const TURN_TOKEN_ID = process.env.TURN_TOKEN_ID;
+  const TURN_API_TOKEN = process.env.TURN_API_TOKEN;
+
+  if (!TURN_TOKEN_ID || !TURN_API_TOKEN) {
+    // Return STUN-only config if TURN not configured
+    return res.json({
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+      ],
+    });
+  }
+
+  try {
+    const response = await fetch(
+      `https://rtc.live.cloudflare.com/v1/turn/keys/${TURN_TOKEN_ID}/credentials/generate`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${TURN_API_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ttl: 86400 }), // 24 hours
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Cloudflare API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error('[TURN] Failed to generate credentials:', error);
+    // Fallback to STUN-only
+    res.json({
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+      ],
+    });
+  }
+});
+
 // Socket.io connection handling
 io.on('connection', (socket) => {
   console.log(`[Connect] ${socket.id}`);

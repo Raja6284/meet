@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
-// eslint-disable-next-line no-unused-vars -- motion is used via JSX member expressions
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
-import { MicOff, Pin, Maximize2 } from 'lucide-react';
+import { MicOff, Pin } from 'lucide-react';
 import Avatar from './Avatar';
 
 export default function VideoTile({
@@ -34,15 +34,16 @@ export default function VideoTile({
       transition={{ duration: 0.3, ease: 'easeOut' }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`
-        relative bg-[var(--color-surface-light)] rounded-2xl overflow-hidden
-        border border-[var(--color-border)]
-        transition-all duration-200
-        ${isActiveSpeaker ? 'speaker-active' : ''}
-        ${isHovered ? 'scale-[1.01]' : ''}
-        ${className}
-      `}
+      className={`video-tile relative overflow-hidden ${isActiveSpeaker ? 'speaker-active' : ''} ${className}`}
+      style={{
+        ...(isHovered && !isScreenShare
+          ? { transform: 'translateY(-3px)', boxShadow: '0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(124,58,237,0.15)' }
+          : {}),
+      }}
     >
+      {/* Top shine line */}
+      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent z-10" />
+
       {/* Video */}
       {showVideo ? (
         <video
@@ -53,7 +54,7 @@ export default function VideoTile({
           className={`w-full h-full object-cover ${isLocal && !isScreenShare ? 'scale-x-[-1]' : ''}`}
         />
       ) : (
-        <div className="w-full h-full flex items-center justify-center bg-[var(--color-surface-light)]">
+        <div className="w-full h-full flex items-center justify-center" style={{ background: 'rgba(12,12,20,0.95)' }}>
           <Avatar name={displayName} size="xl" />
         </div>
       )}
@@ -67,19 +68,32 @@ export default function VideoTile({
         />
       )}
 
-      {/* Name label - bottom left */}
-      <div className="absolute bottom-3 left-3 z-10">
-        <div className="glass rounded-full px-3 py-1 flex items-center gap-2">
-          <span className="text-xs font-medium text-[var(--color-text-primary)] truncate max-w-[150px]">
+      {/* Name label - bottom left — glass pill */}
+      <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 z-10">
+        <div
+          className="rounded-full px-2.5 py-0.5 sm:px-3 sm:py-1 flex items-center gap-2"
+          style={{
+            background: 'rgba(0,0,0,0.5)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255,255,255,0.08)',
+          }}
+        >
+          <span className="text-[10px] sm:text-xs font-medium text-white truncate max-w-[100px] sm:max-w-[150px]">
             {isLocal ? 'You' : displayName}
           </span>
         </div>
       </div>
 
-      {/* Mute indicator - top right */}
+      {/* Mute indicator — top right with glow */}
       {isMuted && (
-        <div className="absolute top-3 right-3 z-10">
-          <div className="bg-[var(--color-danger)]/80 backdrop-blur-sm rounded-full p-1.5">
+        <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-10">
+          <div
+            className="rounded-full p-1 sm:p-1.5"
+            style={{
+              background: 'rgba(239,68,68,0.85)',
+              boxShadow: '0 0 12px rgba(239,68,68,0.4)',
+            }}
+          >
             <MicOff size={12} className="text-white" />
           </div>
         </div>
@@ -88,23 +102,30 @@ export default function VideoTile({
       {/* Screen share label */}
       {isScreenShare && (
         <div className="absolute top-3 left-3 z-10">
-          <div className="glass rounded-full px-3 py-1 flex items-center gap-1.5">
-            <Pin size={12} className="text-[var(--color-accent)]" />
-            <span className="text-xs font-medium text-[var(--color-accent)]">
+          <div
+            className="rounded-full px-3 py-1 flex items-center gap-1.5"
+            style={{
+              background: 'rgba(0,0,0,0.5)',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(124,58,237,0.3)',
+            }}
+          >
+            <Pin size={12} className="text-purple-400" />
+            <span className="text-xs font-medium text-purple-300">
               {isLocal ? 'You are presenting' : `${displayName} is presenting`}
             </span>
           </div>
         </div>
       )}
 
-      {/* Hover overlay */}
+      {/* Hover overlay — subtle vignette */}
       {isHovered && !isScreenShare && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="absolute inset-0 bg-black/20 flex items-center justify-center z-5"
-        >
-        </motion.div>
+          className="absolute inset-0 z-5 pointer-events-none"
+          style={{ background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.2) 100%)' }}
+        />
       )}
     </motion.div>
   );
