@@ -69,16 +69,16 @@ export default function VideoTile({
       )}
 
       {/* Name label - bottom left — glass pill */}
-      <div className="absolute bottom-3 left-3 z-10">
+      <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 z-10">
         <div
-          className="rounded-full px-3 py-1 flex items-center gap-2"
+          className="rounded-full px-2.5 py-0.5 sm:px-3 sm:py-1 flex items-center gap-2"
           style={{
             background: 'rgba(0,0,0,0.5)',
             backdropFilter: 'blur(12px)',
             border: '1px solid rgba(255,255,255,0.08)',
           }}
         >
-          <span className="text-xs font-medium text-white truncate max-w-[150px]">
+          <span className="text-[10px] sm:text-xs font-medium text-white truncate max-w-[100px] sm:max-w-[150px]">
             {isLocal ? 'You' : displayName}
           </span>
         </div>
@@ -86,9 +86,9 @@ export default function VideoTile({
 
       {/* Mute indicator — top right with glow */}
       {isMuted && (
-        <div className="absolute top-3 right-3 z-10">
+        <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-10">
           <div
-            className="rounded-full p-1.5"
+            className="rounded-full p-1 sm:p-1.5"
             style={{
               background: 'rgba(239,68,68,0.85)',
               boxShadow: '0 0 12px rgba(239,68,68,0.4)',

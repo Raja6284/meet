@@ -14,7 +14,7 @@ export default function Modal({ isOpen, onClose, children, title, size = 'md' })
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
           {/* Backdrop — deep blur + vignette */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -36,7 +36,7 @@ export default function Modal({ isOpen, onClose, children, title, size = 'md' })
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.92, y: 16 }}
             transition={{ type: 'spring', stiffness: 400, damping: 28 }}
-            className={`relative w-full ${sizes[size]}`}
+            className={`relative w-full ${sizes[size]} max-h-[90vh] overflow-y-auto custom-scrollbar`}
           >
             {/* Animated gradient border */}
             <div
@@ -60,8 +60,8 @@ export default function Modal({ isOpen, onClose, children, title, size = 'md' })
 
               {/* Header */}
               {title && (
-                <div className="flex items-center justify-between px-6 pt-6 pb-0">
-                  <h2 className="text-lg font-semibold text-[var(--color-text-primary)] tracking-tight">
+                <div className="flex items-center justify-between px-5 sm:px-6 pt-5 sm:pt-6 pb-0">
+                  <h2 className="text-base sm:text-lg font-semibold text-[var(--color-text-primary)] tracking-tight">
                     {title}
                   </h2>
                   <button
@@ -74,7 +74,7 @@ export default function Modal({ isOpen, onClose, children, title, size = 'md' })
               )}
 
               {/* Body */}
-              <div className="p-6">
+              <div className="p-5 sm:p-6">
                 {children}
               </div>
             </div>

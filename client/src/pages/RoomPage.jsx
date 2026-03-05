@@ -29,9 +29,11 @@ export default function RoomPage() {
   const displayNameFromState = location.state?.displayName;
   const initialCameraRef = useRef(location.state?.cameraOn ?? true);
   const initialMicRef = useRef(location.state?.micOn ?? true);
+  const callModeRef = useRef(location.state?.callMode || 'video');
 
   // State
   const [displayName, setDisplayName] = useState(displayNameFromState || '');
+  const [callMode] = useState(location.state?.callMode || 'video');
   const [hasJoined, setHasJoined] = useState(false);
   const [inLobby, setInLobby] = useState(!displayNameFromState);
   const [remoteStreams, setRemoteStreams] = useState({});
@@ -110,12 +112,14 @@ export default function RoomPage() {
   const joinRoom = useCallback(async (lobbySettings) => {
     const cam = lobbySettings?.cameraOn ?? initialCameraRef.current;
     const mic = lobbySettings?.micOn ?? initialMicRef.current;
+    const mode = lobbySettings?.callMode ?? callModeRef.current;
+    const isAudioMode = mode === 'audio';
 
-    const stream = await getMediaStream(true, true);
+    const stream = await getMediaStream(!isAudioMode, true);
     if (!stream) return;
 
     // Apply initial camera/mic settings
-    if (!cam) {
+    if (isAudioMode || !cam) {
       stream.getVideoTracks().forEach(t => { t.enabled = false; });
       setIsCameraOff(true);
     }
@@ -438,6 +442,9 @@ export default function RoomPage() {
     })),
   ], [socketId, displayName, isMuted, isCameraOff, peerInfoMap]);
 
+  // In audio mode, camera is always off
+  const localIsCameraOff = callMode === 'audio' ? true : isCameraOff;
+
   // Show lobby if no display name
   if (inLobby) {
     return (
@@ -449,6 +456,7 @@ export default function RoomPage() {
           joinRoom(settings);
         }}
         participantCount={participantCount}
+        callMode={callMode}
       />
     );
   }
@@ -456,11 +464,11 @@ export default function RoomPage() {
   // Permission error screen
   if (permissionError && !localStream) {
     return (
-      <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center p-6">
+      <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center p-4 sm:p-6">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="relative rounded-2xl p-8 max-w-md text-center"
+          className="relative rounded-2xl p-6 sm:p-8 max-w-md w-full text-center"
           style={{
             background: 'rgba(12,12,20,0.9)',
             backdropFilter: 'blur(24px)',
@@ -474,8 +482,8 @@ export default function RoomPage() {
           >
             <Video size={28} className="text-[var(--color-danger)]" />
           </div>
-          <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-2 tracking-tight">
-            Camera Access Required
+          <h2 className="text-lg sm:text-xl font-semibold text-[var(--color-text-primary)] mb-2 tracking-tight">
+            {callMode === 'audio' ? 'Microphone Access Required' : 'Camera Access Required'}
           </h2>
           <p className="text-sm text-[var(--color-text-secondary)] mb-6">
             {permissionError}
@@ -492,7 +500,7 @@ export default function RoomPage() {
     <div className="h-screen bg-[var(--color-bg)] flex flex-col overflow-hidden">
       {/* Frosted glass top bar */}
       <div
-        className="flex items-center justify-between px-4 py-3 z-20"
+        className="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 z-20"
         style={{
           background: 'rgba(12,12,20,0.6)',
           backdropFilter: 'blur(16px)',
@@ -501,7 +509,7 @@ export default function RoomPage() {
         }}
       >
         {/* Left: Logo + Connection */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <div className="flex items-center gap-2">
             <div
               className="w-7 h-7 rounded-lg flex items-center justify-center"
@@ -520,12 +528,17 @@ export default function RoomPage() {
             </span>
           </div>
           <ConnectionStatus state={connectionState} />
+          {callMode === 'audio' && (
+            <div className="hidden sm:flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-medium" style={{ background: 'rgba(124,58,237,0.12)', color: '#a78bfa', border: '1px solid rgba(124,58,237,0.2)' }}>
+              Audio Only
+            </div>
+          )}
         </div>
 
         {/* Center: Room ID */}
         <button
           onClick={handleCopyLink}
-          className="rounded-full px-4 py-1.5 flex items-center gap-2 transition-all duration-200"
+          className="rounded-full px-3 sm:px-4 py-1.5 flex items-center gap-2 transition-all duration-200"
           style={{
             background: 'rgba(255,255,255,0.04)',
             border: '1px solid rgba(255,255,255,0.06)',
@@ -533,16 +546,16 @@ export default function RoomPage() {
           onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(124,58,237,0.08)'; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
         >
-          <span className="text-xs font-mono text-[var(--color-text-secondary)]">{roomId}</span>
+          <span className="text-xs font-mono text-[var(--color-text-secondary)] truncate max-w-[120px] sm:max-w-none">{roomId}</span>
           {copied ? (
-            <Check size={12} className="text-[var(--color-success)]" />
+            <Check size={12} className="text-[var(--color-success)] flex-shrink-0" />
           ) : (
-            <Copy size={12} className="text-[var(--color-text-muted)]" />
+            <Copy size={12} className="text-[var(--color-text-muted)] flex-shrink-0" />
           )}
         </button>
 
         {/* Right: Duration */}
-        <div className="flex items-center gap-2 text-[var(--color-text-secondary)]">
+        <div className="flex items-center gap-1.5 sm:gap-2 text-[var(--color-text-secondary)]">
           <Clock size={14} />
           <span className="text-xs font-mono">{formatDuration(callDuration)}</span>
         </div>
@@ -550,40 +563,52 @@ export default function RoomPage() {
 
       {/* Main content */}
       <div className="flex-1 flex min-h-0 overflow-hidden relative">
-        {/* Video grid */}
+        {/* Video/Audio grid */}
         <RoomGrid
           localStream={localStream}
           remoteStreams={remoteStreams}
           localDisplayName={displayName}
           localIsMuted={isMuted}
-          localIsCameraOff={isCameraOff}
+          localIsCameraOff={localIsCameraOff}
           activeSpeakerId={activeSpeakerId}
           screenShareStream={screenShareStream}
           screenSharePeerId={screenSharePeerId}
           peerInfoMap={peerInfoMap}
           roomId={roomId}
+          callMode={callMode}
         />
 
-        {/* Side panels */}
-        <div className="flex-shrink-0 h-full py-3 pr-3">
-          <ChatPanel
-            isOpen={isChatOpen}
-            onClose={() => setIsChatOpen(false)}
-            messages={messages}
-            onSend={handleSendMessage}
-            localSocketId={socketId}
-          />
-          <ParticipantList
-            isOpen={isParticipantsOpen}
-            onClose={() => setIsParticipantsOpen(false)}
-            participants={allParticipants}
-            localSocketId={socketId}
-          />
-        </div>
+        {/* Side panels — overlay on mobile, inline on tablet+ */}
+        {(isChatOpen || isParticipantsOpen) && (
+          <div
+            className="absolute inset-0 z-30 sm:relative sm:inset-auto sm:z-auto flex-shrink-0 h-full sm:py-3 sm:pr-3"
+          >
+            {/* Mobile backdrop */}
+            <div
+              className="absolute inset-0 bg-black/60 sm:hidden"
+              onClick={() => { setIsChatOpen(false); setIsParticipantsOpen(false); }}
+            />
+            <div className="relative h-full p-2 sm:p-0">
+              <ChatPanel
+                isOpen={isChatOpen}
+                onClose={() => setIsChatOpen(false)}
+                messages={messages}
+                onSend={handleSendMessage}
+                localSocketId={socketId}
+              />
+              <ParticipantList
+                isOpen={isParticipantsOpen}
+                onClose={() => setIsParticipantsOpen(false)}
+                participants={allParticipants}
+                localSocketId={socketId}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Controls bar */}
-      <div className="py-4 px-4 flex justify-center">
+      <div className="py-3 sm:py-4 px-3 sm:px-4 flex justify-center">
         <ControlsBar
           isMuted={isMuted}
           isCameraOff={isCameraOff}
@@ -591,13 +616,14 @@ export default function RoomPage() {
           unreadCount={unreadCount}
           participantCount={allParticipants.length}
           onToggleMute={handleToggleMute}
-          onToggleCamera={handleToggleCamera}
-          onToggleScreenShare={handleToggleScreenShare}
+          onToggleCamera={callMode === 'audio' ? undefined : handleToggleCamera}
+          onToggleScreenShare={callMode === 'audio' ? undefined : handleToggleScreenShare}
           onToggleChat={handleToggleChat}
           onToggleParticipants={handleToggleParticipants}
           onEndCall={handleEndCall}
           isChatOpen={isChatOpen}
           isParticipantsOpen={isParticipantsOpen}
+          callMode={callMode}
         />
       </div>
 

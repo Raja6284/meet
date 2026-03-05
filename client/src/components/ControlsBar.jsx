@@ -53,15 +53,17 @@ export default function ControlsBar({
   onEndCall,
   isChatOpen,
   isParticipantsOpen,
+  callMode = 'video',
 }) {
   const [showMore, setShowMore] = useState(false);
+  const isAudioMode = callMode === 'audio';
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
-      className="px-5 py-3 flex items-center justify-center gap-2 mx-auto rounded-2xl"
+      className="px-3 sm:px-5 py-2.5 sm:py-3 flex items-center justify-center gap-1.5 sm:gap-2 mx-auto rounded-2xl"
       style={{
         background: 'rgba(12,12,20,0.8)',
         backdropFilter: 'blur(24px)',
@@ -75,35 +77,40 @@ export default function ControlsBar({
       <Tooltip text={isMuted ? 'Unmute' : 'Mute'}>
         <button
           onClick={onToggleMute}
-          className={`control-btn p-3 ${isMuted ? 'bg-[var(--color-danger)] hover:bg-red-500 text-white' : 'bg-white/10 hover:bg-white/20 text-white'}`}
+          className={`control-btn p-2.5 sm:p-3 ${isMuted ? 'bg-[var(--color-danger)] hover:bg-red-500 text-white' : 'bg-white/10 hover:bg-white/20 text-white'}`}
         >
-          {isMuted ? <MicOff size={20} /> : <Mic size={20} />}
+          {isMuted ? <MicOff size={18} className="sm:hidden" /> : <Mic size={18} className="sm:hidden" />}
+          {isMuted ? <MicOff size={20} className="hidden sm:block" /> : <Mic size={20} className="hidden sm:block" />}
         </button>
       </Tooltip>
 
-      {/* Camera */}
-      <Tooltip text={isCameraOff ? 'Turn on camera' : 'Turn off camera'}>
-        <button
-          onClick={onToggleCamera}
-          className={`control-btn p-3 ${isCameraOff ? 'bg-[var(--color-danger)] hover:bg-red-500 text-white' : 'bg-white/10 hover:bg-white/20 text-white'}`}
-        >
-          {isCameraOff ? <CameraOff size={20} /> : <Camera size={20} />}
-        </button>
-      </Tooltip>
+      {/* Camera — hidden in audio mode */}
+      {!isAudioMode && onToggleCamera && (
+        <Tooltip text={isCameraOff ? 'Turn on camera' : 'Turn off camera'}>
+          <button
+            onClick={onToggleCamera}
+            className={`control-btn p-3 ${isCameraOff ? 'bg-[var(--color-danger)] hover:bg-red-500 text-white' : 'bg-white/10 hover:bg-white/20 text-white'}`}
+          >
+            {isCameraOff ? <CameraOff size={20} /> : <Camera size={20} />}
+          </button>
+        </Tooltip>
+      )}
 
-      {/* Screen Share */}
-      <Tooltip text={isScreenSharing ? 'Stop presenting' : 'Share screen'}>
-        <button
-          onClick={onToggleScreenShare}
-          className={`control-btn p-3 ${isScreenSharing
-            ? 'bg-purple-600 hover:bg-purple-500 text-white'
-            : 'bg-white/10 hover:bg-white/20 text-white'
-          }`}
-          style={isScreenSharing ? { boxShadow: '0 0 16px rgba(124,58,237,0.4)' } : {}}
-        >
-          {isScreenSharing ? <MonitorOff size={20} /> : <Monitor size={20} />}
-        </button>
-      </Tooltip>
+      {/* Screen Share — hidden in audio mode */}
+      {!isAudioMode && onToggleScreenShare && (
+        <Tooltip text={isScreenSharing ? 'Stop presenting' : 'Share screen'}>
+          <button
+            onClick={onToggleScreenShare}
+            className={`control-btn p-3 ${isScreenSharing
+              ? 'bg-purple-600 hover:bg-purple-500 text-white'
+              : 'bg-white/10 hover:bg-white/20 text-white'
+            }`}
+            style={isScreenSharing ? { boxShadow: '0 0 16px rgba(124,58,237,0.4)' } : {}}
+          >
+            {isScreenSharing ? <MonitorOff size={20} /> : <Monitor size={20} />}
+          </button>
+        </Tooltip>
+      )}
 
       {/* Divider */}
       <div className="w-px h-8 mx-1" style={{ background: 'linear-gradient(180deg, transparent, rgba(255,255,255,0.1), transparent)' }} />
@@ -212,7 +219,7 @@ export default function ControlsBar({
       <Tooltip text="Leave call">
         <button
           onClick={onEndCall}
-          className="control-btn px-6 py-3 bg-[var(--color-danger)] hover:bg-red-500 text-white font-medium text-sm flex items-center gap-2"
+          className="control-btn px-5 sm:px-6 py-2.5 sm:py-3 bg-[var(--color-danger)] hover:bg-red-500 text-white font-medium text-sm flex items-center gap-2"
           style={{ boxShadow: '0 0 20px rgba(239,68,68,0.25)' }}
         >
           <PhoneOff size={18} />

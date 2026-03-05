@@ -17,7 +17,7 @@ export default function ParticipantList({
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: 360, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-          className="w-[360px] h-full flex flex-col overflow-hidden rounded-2xl"
+          className="w-full sm:w-[340px] md:w-[360px] h-full flex flex-col overflow-hidden rounded-2xl"
           style={{
             background: 'rgba(12,12,20,0.85)',
             backdropFilter: 'blur(24px)',
