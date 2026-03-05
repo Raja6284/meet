@@ -48,6 +48,7 @@ export default function RoomPage() {
   const [callDuration, setCallDuration] = useState(0);
   const [copied, setCopied] = useState(false);
   const [participantCount, setParticipantCount] = useState(0);
+  const [iceServers, setIceServers] = useState(null);
   // socketId from useSocket is already reactive state
 
   const screenStreamRef = useRef(null);
@@ -98,7 +99,26 @@ export default function RoomPage() {
     onRemoteStream,
     onPeerDisconnected,
     onConnectionStateChange,
+    iceServers,
   });
+
+  // Fetch TURN credentials on mount
+  useEffect(() => {
+    fetch(`${SERVER_URL}/api/turn-credentials`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data.iceServers) {
+          setIceServers(data.iceServers);
+          console.log('[TURN] Credentials loaded:', data.iceServers.length, 'servers');
+        }
+      })
+      .catch(() => {
+        console.log('[TURN] Using default STUN servers');
+      });
+  }, []);
 
   // Fetch initial participant count
   useEffect(() => {

@@ -1,26 +1,16 @@
 import { useRef, useCallback, useEffect } from 'react';
 
-const ICE_SERVERS = [
+const DEFAULT_ICE_SERVERS = [
   { urls: 'stun:stun.l.google.com:19302' },
   { urls: 'stun:stun1.l.google.com:19302' },
 ];
 
-// Add TURN server if configured
-const TURN_URL = import.meta.env.VITE_TURN_URL;
-const TURN_USERNAME = import.meta.env.VITE_TURN_USERNAME;
-const TURN_CREDENTIAL = import.meta.env.VITE_TURN_CREDENTIAL;
-
-if (TURN_URL) {
-  ICE_SERVERS.push({
-    urls: TURN_URL,
-    username: TURN_USERNAME,
-    credential: TURN_CREDENTIAL,
-  });
-}
-
-export function useWebRTC({ socketRef, localStreamRef, onRemoteStream, onPeerDisconnected, onConnectionStateChange }) {
+export function useWebRTC({ socketRef, localStreamRef, onRemoteStream, onPeerDisconnected, onConnectionStateChange, iceServers }) {
   const peerConnectionsRef = useRef({});
   const pendingCandidatesRef = useRef({});
+
+  // Use provided ICE servers or default to STUN-only
+  const ICE_SERVERS = iceServers || DEFAULT_ICE_SERVERS;
 
   const createPeerConnection = useCallback((peerId, peerInfo, isInitiator) => {
     if (peerConnectionsRef.current[peerId]) {
@@ -99,7 +89,7 @@ export function useWebRTC({ socketRef, localStreamRef, onRemoteStream, onPeerDis
     }
 
     return pc;
-  }, [socketRef, localStreamRef, onRemoteStream, onPeerDisconnected, onConnectionStateChange]);
+  }, [socketRef, localStreamRef, onRemoteStream, onPeerDisconnected, onConnectionStateChange, ICE_SERVERS]);
 
   const createOffer = useCallback(async (peerId, peerInfo) => {
     const pc = createPeerConnection(peerId, peerInfo, true);

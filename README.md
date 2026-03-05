@@ -101,6 +101,10 @@ npm install
 ```env
 PORT=5000
 CLIENT_URL=http://localhost:5173
+
+# Cloudflare TURN Server (optional)
+TURN_TOKEN_ID=your-turn-token-id
+TURN_API_TOKEN=your-turn-api-token
 ```
 
 **Client** (`client/.env`):
@@ -150,20 +154,31 @@ Deploy the `server/` directory. Set environment variables:
 ```env
 PORT=5000
 CLIENT_URL=https://your-client-domain.vercel.app
+
+# Cloudflare TURN (recommended for production)
+TURN_TOKEN_ID=your-turn-token-id
+TURN_API_TOKEN=your-turn-api-token
 ```
 
-### TURN Server (optional, for production)
+### TURN Server (Cloudflare - Recommended for Production)
 
-For calls across strict NATs/firewalls, configure a TURN server:
+For reliable calls across strict NATs/firewalls, NearMeet uses **Cloudflare TURN**:
+
+1. **Create a TURN app** at [Cloudflare Dashboard](https://dash.cloudflare.com/) → Calls → TURN
+2. **Get credentials**: Copy your `TURN_TOKEN_ID` and `TURN_API_TOKEN`
+3. **Add to server .env**:
 
 ```env
-# client/.env
-VITE_TURN_URL=turn:your-turn-server:3478
-VITE_TURN_USERNAME=username
-VITE_TURN_CREDENTIAL=credential
+# server/.env
+TURN_TOKEN_ID=9e7641df430c8688e0e46d5112cb4085
+TURN_API_TOKEN=7d57295f23bccb51a30a6e37cdc0627f1eaf1af71bf0a14d6375703bd4bda607
 ```
 
-Free options: [Open Relay](https://www.metered.ca/tools/openrelay/), [Xirsys](https://xirsys.com/), or self-hosted [coturn](https://github.com/coturn/coturn).
+4. **Deploy** — The server automatically generates short-lived TURN credentials for each client
+
+Cloudflare TURN provides global edge servers with automatic failover. No additional client configuration needed — credentials are fetched dynamically via `/api/turn-credentials`.
+
+**Alternative options**: [Open Relay](https://www.metered.ca/tools/openrelay/), [Xirsys](https://xirsys.com/), or self-hosted [coturn](https://github.com/coturn/coturn).
 
 ## Architecture
 
