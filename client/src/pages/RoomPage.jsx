@@ -110,12 +110,15 @@ export default function RoomPage() {
     })
       .then(r => r.json())
       .then(data => {
-        if (data.iceServers) {
+        if (data.iceServers && Array.isArray(data.iceServers) && data.iceServers.length > 0) {
           setIceServers(data.iceServers);
           console.log('[TURN] Credentials loaded:', data.iceServers.length, 'servers');
+        } else {
+          console.log('[TURN] Invalid format, using default STUN servers');
         }
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error('[TURN] Error fetching credentials:', err);
         console.log('[TURN] Using default STUN servers');
       });
   }, []);
@@ -340,8 +343,19 @@ export default function RoomPage() {
   };
 
   // Handle toggle camera
-  const handleToggleCamera = () => {
-    const newCamOff = toggleCamera();
+  const handleToggleCamera = async () => {
+    const hadVideoTrack = streamRef.current?.getVideoTracks().length > 0;
+    const newCamOff = await toggleCamera();
+    
+    // If we just added a new video track (turned camera on from audio-only mode)
+    if (hadVideoTrack === false && !newCamOff && streamRef.current) {
+      const newVideoTrack = streamRef.current.getVideoTracks()[0];
+      if (newVideoTrack) {
+        // Replace track in all peer connections
+        await replaceTrack(null, newVideoTrack);
+      }
+    }
+    
     socketRef.current?.emit('user-toggle-camera', { roomId, isCameraOff: newCamOff });
   };
 
