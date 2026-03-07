@@ -66,7 +66,30 @@ app.post('/api/turn-credentials', async (req, res) => {
     }
 
     const data = await response.json();
-    res.json(data);
+    
+    // Normalize the response to ensure iceServers is an array
+    let iceServers = [];
+    
+    if (data.iceServers) {
+      // If iceServers is already an array, use it
+      if (Array.isArray(data.iceServers)) {
+        iceServers = data.iceServers;
+      } 
+      // If it's an object (Cloudflare format), convert to array
+      else if (typeof data.iceServers === 'object') {
+        iceServers = [data.iceServers];
+      }
+    }
+    
+    // Always include STUN servers as fallback
+    if (iceServers.length === 0 || !iceServers.some(s => s.urls && s.urls.includes('stun'))) {
+      iceServers.unshift(
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' }
+      );
+    }
+    
+    res.json({ iceServers });
   } catch (error) {
     console.error('[TURN] Failed to generate credentials:', error);
     // Fallback to STUN-only

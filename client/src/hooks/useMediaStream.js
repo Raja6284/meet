@@ -76,14 +76,42 @@ export function useMediaStream() {
     return isMuted;
   }, [isMuted]);
 
-  const toggleCamera = useCallback(() => {
+  const toggleCamera = useCallback(async () => {
     if (streamRef.current) {
       const videoTracks = streamRef.current.getVideoTracks();
-      videoTracks.forEach(track => {
-        track.enabled = !track.enabled;
-      });
-      setIsCameraOff(prev => !prev);
-      return !isCameraOff;
+      
+      // If we have video tracks, just toggle them
+      if (videoTracks.length > 0) {
+        videoTracks.forEach(track => {
+          track.enabled = !track.enabled;
+        });
+        setIsCameraOff(prev => !prev);
+        return !isCameraOff;
+      } 
+      // If no video tracks exist (audio-only mode), request camera
+      else if (isCameraOff) {
+        try {
+          const videoStream = await navigator.mediaDevices.getUserMedia({
+            video: {
+              width: { ideal: 1280, max: 1920 },
+              height: { ideal: 720, max: 1080 },
+              frameRate: { ideal: 30, max: 30 },
+              facingMode: 'user',
+            }
+          });
+          
+          const videoTrack = videoStream.getVideoTracks()[0];
+          if (videoTrack) {
+            streamRef.current.addTrack(videoTrack);
+            setLocalStream(new MediaStream(streamRef.current.getTracks()));
+            setIsCameraOff(false);
+            return false;
+          }
+        } catch (err) {
+          console.error('[Media] Failed to get video track:', err);
+          return true;
+        }
+      }
     }
     return isCameraOff;
   }, [isCameraOff]);
